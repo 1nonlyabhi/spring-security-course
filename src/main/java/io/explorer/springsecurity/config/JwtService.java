@@ -17,7 +17,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "2305ba1bf857b9dc419449738a3d230f99b83538c1865e64f3153d07bd1f57cca0383c60e363ffba9734773b44e0a01cb0004af7a22580f9dc94265c3bb8242176bb3e4094b95265291169f268fa2e46a87e3f88c58201125c95d1640e21c8df5d1c9e29293610c0a76c62a163efe6c864a1e4c0c8db313bc022dd723d85cce2aab41d39657ff26bbc8d6054d429373394e0397d70a1df612fee9afc36660b0e82e9a30a2a34487a599439fb28465381f1e9d3fab86a05be6c0d5279f2ac77a32ac604991b2c7a6c11f1ffb9aad64d2a05789ec9df046130e1ce89067bfb54e477e395dff493a1028689cd52f2232b09478b703524ec46bcdb0d100b97b211a0";
+    private static final String SECRET_KEY = "69c87ad41989d61908f7a32dd56bd359ad7e9b77dd41d5b79c3314a2d3046380";
 
      String extractUsername(final String token) {
         return extractClaim(token, Claims::getSubject);
@@ -62,7 +62,7 @@ public class JwtService {
          return Jwts.parserBuilder()
                  .setSigningKey(getSignInKey())
                  .build()
-                 .parseClaimsJwt(token)
+                 .parseClaimsJws(token)
                  .getBody();
     }
 
