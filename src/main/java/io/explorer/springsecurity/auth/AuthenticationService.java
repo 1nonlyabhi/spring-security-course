@@ -1,6 +1,9 @@
 package io.explorer.springsecurity.auth;
 
 import io.explorer.springsecurity.config.JwtService;
+import io.explorer.springsecurity.token.Token;
+import io.explorer.springsecurity.token.TokenRepository;
+import io.explorer.springsecurity.token.TokenType;
 import io.explorer.springsecurity.user.Role;
 import io.explorer.springsecurity.user.User;
 import io.explorer.springsecurity.user.UserRepository;
@@ -17,6 +20,7 @@ public class AuthenticationService {
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private JwtService jwtService;
     @Autowired private AuthenticationManager authenticationManager;
+    @Autowired private TokenRepository tokenRepository;
 
 
     public AuthenticationResponse register(RegisterRequest request) {
@@ -27,11 +31,23 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+        User savedUser = userRepository.save(user);
+        String jwtToken = jwtService.generateToken(user);
+        saveUserToken(savedUser, jwtToken);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
+    }
+
+    private void saveUserToken(User user, String jwtToken) {
+        Token token = Token.builder()
+                .user(user)
+                .token(jwtToken)
+                .tokenType(TokenType.BEARER)
+                .isExpired(false)
+                .isRevoked(false)
+                .build();
+        tokenRepository.save(token);
     }
 
     public AuthenticationResponse authenticate(AuthenticateRequest request) {
@@ -41,9 +57,10 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        var user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(user);
+        saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
