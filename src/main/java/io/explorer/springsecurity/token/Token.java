@@ -1,12 +1,10 @@
 package io.explorer.springsecurity.token;
 
 import io.explorer.springsecurity.user.User;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -22,21 +20,18 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Token {
 
-    @Id
-    @GeneratedValue
-    private Long id;
+  @Id @GeneratedValue private Long id;
 
-    private String token;
+  private String token;
 
-    @Enumerated(EnumType.STRING)
-    private TokenType tokenType;
+  @Enumerated(EnumType.STRING)
+  private TokenType tokenType;
 
-    private boolean expired;
+  private boolean expired;
 
-    private boolean revoked;
+  private boolean revoked;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
 }
