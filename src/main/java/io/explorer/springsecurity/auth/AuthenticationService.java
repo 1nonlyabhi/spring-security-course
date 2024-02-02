@@ -107,6 +107,8 @@ public class AuthenticationService {
             User user = userRepository.findByEmail(userEmail).orElseThrow();
             if(jwtService.isTokenValid(refreshToken, user)){
                 String accessToken = jwtService.generateAccessToken(user);
+                revokeAllUserTokens(user);
+                saveUserToken(user, accessToken);
                 var authResponse = AuthenticationResponse.builder()
                         .refreshToken(refreshToken)
                         .accessToken(accessToken)
