@@ -29,13 +29,26 @@ public class AuthenticationService {
   @Autowired private TokenRepository tokenRepository;
 
   public AuthenticationResponse register(RegisterRequest request) {
+    final Role role;
+    if (request.getRole().isBlank() || request.getRole() == null) {
+      role = Role.USER;
+    } else {
+      if (request.getRole().equalsIgnoreCase("ADMIN")) {
+        role = Role.ADMIN;
+      } else if (request.getRole().equalsIgnoreCase("MANAGER")) {
+        role = Role.MANAGER;
+      } else {
+        role = Role.USER;
+      }
+    }
+
     var user =
         User.builder()
             .email(request.getEmail())
             .firstname(request.getFirstname())
             .lastname(request.getLastname())
             .password(passwordEncoder.encode(request.getPassword()))
-            .role(Role.valueOf(request.getRole()))
+            .role(role)
             .build();
     User savedUser = userRepository.save(user);
     String accessToken = jwtService.generateAccessToken(user);
